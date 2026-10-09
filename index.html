@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>iPod Classic Web</title>
+    <title>iPod Radio Classic</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
             background: #111;
-            height: 100dvh; /* Altura dinámica perfecta para móviles */
+            height: 100dvh;
             width: 100vw;
             display: flex;
             justify-content: center;
@@ -22,14 +22,13 @@
             background: linear-gradient(145deg, #f5f5f7, #d1d1d6);
             width: 100%;
             height: 100%;
-            max-width: 420px; /* En escritorio se ve como iPod, en móvil ocupa todo */
+            max-width: 420px;
             display: flex;
             flex-direction: column;
             padding: 15px;
             position: relative;
         }
 
-        /* En escritorio, le damos bordes redondeados y sombra */
         @media (min-width: 450px) {
             .ipod {
                 height: 95vh;
@@ -40,138 +39,155 @@
         }
 
         .screen {
-            flex: 1; /* Ocupa todo el espacio disponible */
-            background: #121212; /* Fondo oscuro para que el embed de Spotify se vea nativo */
+            flex: 1;
+            background: #000;
             border: 3px solid #333;
             border-radius: 12px;
             margin-bottom: 20px;
             overflow: hidden;
             position: relative;
-            box-shadow: inset 0 2px 10px rgba(0,0,0,0.5);
+            box-shadow: inset 0 2px 10px rgba(0,0,0,0.8);
             display: flex;
             flex-direction: column;
+            color: white;
         }
 
         .header {
             background: linear-gradient(180deg, #4a90e2 0%, #357abd 100%);
             color: white;
-            padding: 10px;
+            padding: 10px 12px;
             font-size: 15px;
             font-weight: 600;
-            text-align: center;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-shrink: 0;
         }
 
         .battery {
-            width: 22px;
-            height: 11px;
-            border: 1.5px solid white;
-            border-radius: 3px;
-            padding: 1px;
-            position: relative;
+            width: 22px; height: 11px; border: 1.5px solid white; border-radius: 3px; padding: 1px; position: relative;
         }
         .battery::after {
-            content: '';
-            position: absolute;
-            right: -4px;
-            top: 2px;
-            width: 2px;
-            height: 5px;
-            background: white;
-            border-radius: 0 1px 1px 0;
+            content: ''; position: absolute; right: -4px; top: 2px; width: 2px; height: 5px; background: white; border-radius: 0 1px 1px 0;
         }
-        .battery-level {
-            height: 100%;
-            background: #4cd964;
-            width: 85%;
-            border-radius: 1px;
-        }
+        .battery-level { height: 100%; background: #4cd964; width: 85%; border-radius: 1px; }
 
         .content-area {
             flex: 1;
             position: relative;
             overflow: hidden;
+            display: flex;
+            flex-direction: column;
         }
 
+        /* --- VISTA: MENÚ --- */
         .menu {
-            height: 100%;
+            flex: 1;
             overflow-y: auto;
-            padding: 10px;
+            padding: 5px;
+            background: #f0f0f0;
+            color: #333;
         }
-
         .menu-item {
             padding: 14px 12px;
-            border-radius: 8px;
+            border-radius: 6px;
             cursor: pointer;
             font-size: 15px;
+            font-weight: 500;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 4px;
-            color: #e0e0e0;
-            background: #1e1e1e;
+            margin-bottom: 2px;
         }
-
         .menu-item.selected {
             background: linear-gradient(180deg, #4a90e2 0%, #357abd 100%);
             color: white;
         }
+        .menu-item .playing-icon { font-size: 12px; }
 
-        .embed-container {
-            width: 100%;
-            height: 100%;
-            background: #121212;
+        /* --- VISTA: REPRODUCTOR --- */
+        .player-view {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(180deg, #1a1a1a 0%, #000000 100%);
+            padding: 20px;
+            text-align: center;
         }
 
-        .embed-container iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-            display: block;
-        }
-
-        .add-form {
-            padding: 10px;
-            background: #1e1e1e;
-            border-top: 1px solid #333;
-        }
-
-        .add-form input {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #4a90e2;
-            border-radius: 6px;
-            font-size: 13px;
-            margin-bottom: 8px;
-            background: #2c2c2c;
+        .live-badge {
+            background: #e74c3c;
             color: white;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 800;
+            letter-spacing: 1px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 0 10px rgba(231, 76, 60, 0.5);
+        }
+        .live-dot {
+            width: 8px; height: 8px; background: white; border-radius: 50%;
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+        .station-name-large {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            line-height: 1.2;
+            color: #fff;
         }
 
-        .add-form button {
-            background: #4a90e2;
-            color: white;
-            border: none;
-            padding: 10px;
-            border-radius: 6px;
+        .status-text {
             font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            width: 100%;
+            color: #4cd964;
+            margin-top: 10px;
+            min-height: 20px;
         }
 
-        /* RUEDA TÁCTIL ESCALABLE */
+        /* Ecualizador animado simple */
+        .equalizer {
+            display: flex;
+            gap: 4px;
+            height: 40px;
+            align-items: flex-end;
+            margin-top: 30px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .equalizer.active { opacity: 1; }
+        .bar {
+            width: 6px;
+            background: #4a90e2;
+            border-radius: 3px;
+            animation: bounce 0.8s infinite ease-in-out alternate;
+        }
+        .bar:nth-child(1) { height: 20%; animation-delay: 0.1s; }
+        .bar:nth-child(2) { height: 60%; animation-delay: 0.3s; }
+        .bar:nth-child(3) { height: 40%; animation-delay: 0.0s; }
+        .bar:nth-child(4) { height: 80%; animation-delay: 0.4s; }
+        .bar:nth-child(5) { height: 30%; animation-delay: 0.2s; }
+        @keyframes bounce { 0% { height: 20%; } 100% { height: 100%; } }
+
+        /* --- RUEDA TÁCTIL --- */
         .click-wheel {
             background: linear-gradient(145deg, #e8e8e8, #c5c5c5);
             border-radius: 50%;
-            width: 65vw; /* Escala con el ancho de la pantalla del móvil */
-            max-width: 260px; /* Tope para escritorio */
-            aspect-ratio: 1 / 1; /* Mantiene la forma circular perfecta */
+            width: 65vw;
+            max-width: 260px;
+            aspect-ratio: 1 / 1;
             margin: 0 auto 30px;
             position: relative;
             box-shadow: 0 8px 25px rgba(0,0,0,0.3), inset 0 2px 5px rgba(255,255,255,0.8);
             touch-action: none;
+            flex-shrink: 0;
         }
 
         .wheel-button {
@@ -180,31 +196,19 @@
             border-radius: 50%;
             width: 35%;
             height: 35%;
-            top: 50%;
-            left: 50%;
+            top: 50%; left: 50%;
             transform: translate(-50%, -50%);
             box-shadow: 0 3px 10px rgba(0,0,0,0.2), inset 0 1px 3px rgba(255,255,255,0.9);
             cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            color: #4a90e2;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 24px; color: #4a90e2;
             transition: transform 0.1s;
         }
-
-        .wheel-button:active {
-            transform: translate(-50%, -50%) scale(0.92);
-        }
+        .wheel-button:active { transform: translate(-50%, -50%) scale(0.92); }
 
         .wheel-label {
-            position: absolute;
-            color: #666;
-            font-size: 13px;
-            font-weight: 700;
-            letter-spacing: 0.5px;
+            position: absolute; color: #666; font-size: 13px; font-weight: 700; letter-spacing: 0.5px;
         }
-
         .wheel-label.top { top: 12%; left: 50%; transform: translateX(-50%); }
         .wheel-label.bottom { bottom: 12%; left: 50%; transform: translateX(-50%); }
         .wheel-label.left { left: 12%; top: 50%; transform: translateY(-50%); }
@@ -216,130 +220,205 @@
     <div class="ipod">
         <div class="screen">
             <div class="header">
-                <span id="screen-title">Reproduciendo</span>
+                <span id="screen-title">Radio</span>
                 <div class="battery"><div class="battery-level"></div></div>
             </div>
             
             <div class="content-area">
-                <!-- Contenedor del reproductor de Spotify (VISIBLE POR DEFECTO) -->
-                <div class="embed-container" id="embed-container">
-                    <!-- theme=0 activa el modo oscuro para que se vea perfecto y el botón de play sea visible -->
-                    <iframe id="spotify-embed" src="https://open.spotify.com/embed/playlist/4Tzp3MN0B0oovvJLrJhnUl?utm_source=generator&theme=0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+                <!-- Vista del Menú -->
+                <div class="menu" id="menu-view">
+                    <!-- Se llena con JS -->
                 </div>
 
-                <!-- Menú oculto inicialmente -->
-                <div class="menu" id="menu" style="display:none;"></div>
-                
-                <!-- Formulario para agregar más -->
-                <div class="add-form" id="add-form" style="display:none;">
-                    <input type="text" id="url-input" placeholder="Pega URL de Spotify (playlist, álbum, canción)...">
-                    <button onclick="addFromUrl()">➕ Agregar a la biblioteca</button>
+                <!-- Vista del Reproductor -->
+                <div class="player-view" id="player-view" style="display: none;">
+                    <div class="live-badge">
+                        <div class="live-dot"></div> EN VIVO
+                    </div>
+                    <div class="station-name-large" id="player-station-name">Estación</div>
+                    <div class="status-text" id="player-status">Conectando...</div>
+                    
+                    <div class="equalizer" id="equalizer">
+                        <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+                        <div class="bar"></div><div class="bar"></div>
+                    </div>
                 </div>
-            </div>
+            </div.
         </div>
 
         <div class="click-wheel" id="click-wheel">
             <div class="wheel-label top">MENU</div>
-            <div class="wheel-label bottom">PLAY</div>
+            <div class="wheel-label bottom">PLAY/PAUSE</div>
             <div class="wheel-label left">◀◀</div>
             <div class="wheel-label right">▶▶</div>
             <div class="wheel-button" id="center-button">●</div>
         </div>
     </div>
 
-    <script>
-        let items = [
-            { title: 'Mi Playlist Principal', url: 'https://open.spotify.com/embed/playlist/4Tzp3MN0B0oovvJLrJhnUl?utm_source=generator&theme=0' }
-        ];
-        
-        let selectedIndex = 0;
-        let currentView = 'embed'; // Empezamos directamente en la música
+    <!-- Elemento de audio invisible -->
+    <audio id="radio-audio" preload="none"></audio>
 
-        function convertToEmbed(url) {
-            url = url.trim();
-            if (url.includes('/embed/')) return url + '&theme=0';
-            return url.replace('open.spotify.com/', 'open.spotify.com/embed/') + '?utm_source=generator&theme=0';
+    <script>
+        // 📻 TU LISTA DE ESTACIONES
+        const stationsList = [
+            { name: 'LOFI 24/7', url: 'https://ec3.yesstreaming.net:3755/stream' },
+            { name: 'RADIO OXÍGENO', url: 'https://mdstrm.com/audio/5fab0687bcd6c2389ee9480c/icecast.audio' },
+            { name: 'RADIO MÁGICA', url: 'https://mdstrm.com/audio/6839e28eb3fdc597ac2e2e43/icecast.audio?property=aiir&_=224873' },
+            { name: 'RADIO FIT', url: 'https://node-15.zeno.fm/fb9sp98vc5zuv' },
+            { name: 'RADIO FELICIDAD', url: 'https://mdstrm.com/audio/5fad731fcf097a068af3c8f7/icecast.audio' },
+            { name: 'RADIO RPP', url: 'https://mdstrm.com/audio/5fab3416b5f9ef165cfab6e9/icecast.audio' },
+            { name: 'RADIO EXITOSA', url: 'https://stream.zeno.fm/csy4vzackf9uv' },
+            { name: 'LA INOLVIDABLE', url: 'https://27263.live.streamtheworld.com/CRP_LI_SC?csegid=30008&dist=30008' },
+            { name: 'PANAMERICANA', url: 'https://mdstrm.com/audio/6598b62dded1380470f4e539/icecast.audio' },
+            { name: 'RITMO ROMÁNTICA', url: 'https://23113.live.streamtheworld.com/CRP_RIT_SC?csegid=30008&dist=30008' },
+            { name: 'RADIO CORAZÓN', url: 'https://mdstrm.com/audio/5fada514fc16c006bd63370f/icecast.audio' },
+            { name: 'Z ROCK & POP', url: 'https://radioz.egostreaming.pe/radio/3e4f6a1b2c3d4e567890abcd/' },
+            { name: 'STUDIO 92', url: 'https://gcdn.2mdn.net/videoplayback/id/0751c120d4c7c8a1/itag/345/source/web_video_ads/xpc/EgVovf3BOg%3D%3D/ctier/L/acao/yes/ip/0.0.0.0/ipbits/0/expire/1752812287/sparams/ip,ipbits,expire,id,itag,source,xpc,ctier,acao/signature/36B65E93093AE4B3E88C9C65B223187B837A084D.3E4DFCA2EC3288AF4DF879EDD389CCBEBE88331C/key/ck2/file/file.mp4' },
+            { name: 'RADIO DISNEY', url: 'https://26643.live.streamtheworld.com/DISNEY_PER_LM_SC?dist=web-radiodisney-disneylatino' },
+            { name: 'RADIO OASIS', url: 'https://stream.zeno.fm/3bhmjhlsl0wvv' },
+            { name: 'LAS QUENAS', url: 'https://radio.lnx.pe:7000/stream' },
+            { name: 'SALKANTAY', url: 'http://167.114.118.119:7662/stream' }, // ⚠️ Nota: HTTP mixto puede bloquearse en sitios HTTPS
+            { name: 'MEGA STEREO', url: 'https://cast1.my-control-panel.com/proxy/megaestereo/stream' },
+            { name: 'COCA RAYMI', url: 'https://stream.zeno.fm/di4yvkfirz0vv' },
+            { name: 'ROCK EN ESPAÑOL', url: 'https://stream.zeno.fm/0vgy8qv3feruv' }
+        ];
+
+        let currentIndex = 0;
+        let currentView = 'menu'; // 'menu' o 'player'
+        let isPlaying = false;
+
+        const audio = document.getElementById('radio-audio');
+        const menuView = document.getElementById('menu-view');
+        const playerView = document.getElementById('player-view');
+        const screenTitle = document.getElementById('screen-title');
+        const playerStationName = document.getElementById('player-station-name');
+        const playerStatus = document.getElementById('player-status');
+        const equalizer = document.getElementById('equalizer');
+
+        // --- FUNCIONES DE AUDIO ---
+        function loadAndPlay(index) {
+            currentIndex = index;
+            const station = stationsList[currentIndex];
+            
+            playerStationName.textContent = station.name;
+            playerStatus.textContent = "Conectando...";
+            playerStatus.style.color = "#f39c12";
+            equalizer.classList.remove('active');
+            
+            audio.src = station.url;
+            audio.load();
+            
+            const playPromise = audio.play();
+            if (playPromise !== undefined) {
+                playPromise.then(() => {
+                    isPlaying = true;
+                    playerStatus.textContent = "Reproduciendo";
+                    playerStatus.style.color = "#4cd964";
+                    equalizer.classList.add('active');
+                    renderMenu(); // Actualizar icono en el menú
+                }).catch(error => {
+                    console.error("Error al reproducir:", error);
+                    isPlaying = false;
+                    playerStatus.textContent = "Error de conexión";
+                    playerStatus.style.color = "#e74c3c";
+                    equalizer.classList.remove('active');
+                });
+            }
         }
 
-        function addFromUrl() {
-            const input = document.getElementById('url-input');
-            const url = input.value.trim();
-            
-            if (!url || !url.includes('spotify.com')) {
-                alert('Pega una URL válida de Spotify');
-                return;
+        function togglePlay() {
+            if (currentView === 'menu') {
+                loadAndPlay(currentIndex);
+                showPlayer();
+            } else {
+                if (isPlaying) {
+                    audio.pause();
+                    isPlaying = false;
+                    playerStatus.textContent = "Pausado";
+                    playerStatus.style.color = "#f39c12";
+                    equalizer.classList.remove('active');
+                } else {
+                    playerStatus.textContent = "Reconectando...";
+                    audio.play().then(() => {
+                        isPlaying = true;
+                        playerStatus.textContent = "Reproduciendo";
+                        playerStatus.style.color = "#4cd964";
+                        equalizer.classList.add('active');
+                    }).catch(() => {
+                        playerStatus.textContent = "Error";
+                        playerStatus.style.color = "#e74c3c";
+                    });
+                }
             }
-            
-            const embedUrl = convertToEmbed(url);
-            items.push({ title: `Agregado ${items.length}`, url: embedUrl });
-            input.value = '';
+        }
+
+        function nextStation() {
+            currentIndex = (currentIndex + 1) % stationsList.length;
+            if (currentView === 'menu') {
+                renderMenu();
+                scrollToSelected();
+            } else {
+                loadAndPlay(currentIndex);
+            }
+        }
+
+        function prevStation() {
+            currentIndex = (currentIndex - 1 + stationsList.length) % stationsList.length;
+            if (currentView === 'menu') {
+                renderMenu();
+                scrollToSelected();
+            } else {
+                loadAndPlay(currentIndex);
+            }
+        }
+
+        // --- FUNCIONES DE UI ---
+        function showPlayer() {
+            currentView = 'player';
+            menuView.style.display = 'none';
+            playerView.style.display = 'flex';
+            screenTitle.textContent = 'Reproduciendo';
+        }
+
+        function showMenu() {
+            currentView = 'menu';
+            playerView.style.display = 'none';
+            menuView.style.display = 'block';
+            screenTitle.textContent = 'Estaciones';
             renderMenu();
+            scrollToSelected();
         }
 
         function renderMenu() {
-            currentView = 'menu';
-            document.getElementById('embed-container').style.display = 'none';
-            document.getElementById('add-form').style.display = 'block';
-            const menu = document.getElementById('menu');
-            menu.style.display = 'block';
-            document.getElementById('screen-title').textContent = `Biblioteca (${items.length})`;
-            
-            menu.innerHTML = items.map((item, i) => `
-                <div class="menu-item ${i === selectedIndex ? 'selected' : ''}" data-index="${i}">
-                    <span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:75%;">${item.title}</span>
-                    <span>▶</span>
+            menuView.innerHTML = stationsList.map((station, i) => `
+                <div class="menu-item ${i === currentIndex ? 'selected' : ''}" data-index="${i}">
+                    <span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:85%;">${station.name}</span>
+                    ${i === currentIndex && isPlaying ? '<span class="playing-icon">🔊</span>' : ''}
                 </div>
             `).join('');
-            
-            menu.querySelectorAll('.menu-item').forEach((item, i) => {
+
+            menuView.querySelectorAll('.menu-item').forEach((item, i) => {
                 item.onclick = () => {
-                    selectedIndex = i;
-                    playItem(i);
+                    currentIndex = i;
+                    loadAndPlay(currentIndex);
+                    showPlayer();
                 };
             });
         }
 
-        function playItem(index) {
-            const item = items[index];
-            currentView = 'embed';
-            document.getElementById('menu').style.display = 'none';
-            document.getElementById('add-form').style.display = 'none';
-            const container = document.getElementById('embed-container');
-            container.style.display = 'block';
-            document.getElementById('screen-title').textContent = 'Reproduciendo';
-            
-            // Recargar el iframe con la nueva URL
-            document.getElementById('spotify-embed').src = item.url;
+        function scrollToSelected() {
+            setTimeout(() => {
+                const selected = menuView.querySelector('.selected');
+                if (selected) {
+                    selected.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }, 50);
         }
 
-        function goBack() {
-            if (currentView === 'embed') {
-                renderMenu();
-            } else if (currentView === 'menu') {
-                // En menú, el botón de arriba (MENU) podría limpiar o ir al inicio
-                currentView = 'embed';
-                document.getElementById('menu').style.display = 'none';
-                document.getElementById('add-form').style.display = 'none';
-                document.getElementById('embed-container').style.display = 'block';
-                document.getElementById('screen-title').textContent = 'Reproduciendo';
-            }
-        }
+        // Inicializar menú
+        renderMenu();
 
-        function nextItem() {
-            if (items.length === 0) return;
-            selectedIndex = Math.min(selectedIndex + 1, items.length - 1);
-            if (currentView === 'menu') renderMenu();
-            else playItem(selectedIndex);
-        }
-
-        function prevItem() {
-            if (items.length === 0) return;
-            selectedIndex = Math.max(selectedIndex - 1, 0);
-            if (currentView === 'menu') renderMenu();
-            else playItem(selectedIndex);
-        }
-
-        // ===== CONTROLES DE LA RUEDA (Táctil y Mouse) =====
+        // --- CONTROLES DE LA RUEDA ---
         const wheel = document.getElementById('click-wheel');
         let lastAngle = null, accumulated = 0;
         
@@ -359,10 +438,9 @@
                 if (delta < -180) delta += 360;
                 accumulated += delta;
                 
-                // Sensibilidad ajustada para móvil
-                if (Math.abs(accumulated) > 15) {
-                    if (accumulated > 0) nextItem();
-                    else prevItem();
+                if (Math.abs(accumulated) > 15) { // Sensibilidad
+                    if (accumulated > 0) nextStation();
+                    else prevStation();
                     accumulated = 0;
                 }
             }
@@ -374,11 +452,17 @@
         wheel.addEventListener('touchmove', (e) => { e.preventDefault(); handleMove(e); }, { passive: false });
         wheel.addEventListener('touchend', () => { lastAngle = null; accumulated = 0; });
 
+        // Botón central
         document.getElementById('center-button').onclick = () => {
-            if (currentView === 'menu' && items.length > 0) playItem(selectedIndex);
+            if (currentView === 'menu') {
+                loadAndPlay(currentIndex);
+                showPlayer();
+            } else {
+                togglePlay();
+            }
         };
 
-        // Click en zonas de la rueda
+        // Zonas de la rueda (Click)
         wheel.addEventListener('click', (e) => {
             if (e.target.id === 'center-button') return;
             const rect = wheel.getBoundingClientRect();
@@ -387,15 +471,12 @@
             const cx = rect.width / 2, cy = rect.height / 2;
             const angle = Math.atan2(y - cy, x - cx) * 180 / Math.PI;
             
-            if (angle >= -45 && angle < 45) nextItem();       // Derecha
-            else if (angle >= 45 && angle < 135) goBack();    // Abajo (PLAY)
-            else if (angle >= -135 && angle < -45) prevItem();// Izquierda
-            else if (angle >= 135 || angle < -135) goBack();  // Arriba (MENU)
+            if (angle >= -45 && angle < 45) nextStation();       // Derecha (▶▶)
+            else if (angle >= 45 && angle < 135) togglePlay();   // Abajo (PLAY)
+            else if (angle >= -135 && angle < -45) prevStation();// Izquierda (◀◀)
+            else if (angle >= 135 || angle < -135) showMenu();   // Arriba (MENU)
         });
 
-        document.getElementById('url-input').addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') addFromUrl();
-        });
     </script>
 </body>
 </html>
